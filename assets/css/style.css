@@ -1,0 +1,59 @@
+@font-face {
+	font-family: "Poppins";
+	src: url("/assets/font/Poppins-Regular.ttf") format("woff2");
+}
+
+@font-face {
+	font-family: "Alice";
+	src: url("/assets/font/Alice-Regular.ttf") format("opentype");
+}
+
+@font-face {
+	font-family: "Pinyon";
+	src: url("/assets/font/PinyonScript-Regular.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "Cormorant";
+	src: url("/assets/font/CormorantInfant-Regular.ttf") format("truetype");
+}
+
+
+.font-poppins { font-family: "Poppins", sans-serif; }
+.font-alice { font-family: "Alice", sans-serif; }
+.font-pinyon { font-family: "Pinyon", sans-serif; }
+.font-cormorant { font-family: "Cormorant", sans-serif; }
+
+body {
+    background-color: #FFFFFF;
+    font-family: 'Poppins', sans-serif;
+
+}
+
+.container{
+    background-color: #F7F0E6;
+}
+.bg-cover{
+    background-color: #BEC4AA;
+    border-color: #E4E8DA;
+}
+
+.ornamen-bunga-kanan{
+    z-index: 999;
+}
+
+.bg-schedule{
+    border-color: #E4E8DA;
+}
+
+.map-embed > iframe {
+	width: 250px;
+	max-width: 250px;
+}
+
+@media (min-width: 768px) {
+	.map-embed > iframe {
+		width: 100%;
+		max-width: 100%;
+	}
+}

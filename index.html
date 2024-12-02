@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <meta name="description" content />
+    <meta property="og:locale" content />
+    <meta property="og:type" content />
+    <meta property="og:title" content />
+    <meta property="og:description" content />
+    <meta property="og:url" content />
+    <meta property="og:site_name" content />
+    <meta property="article:modified_time" content />
+    <meta property="og:image" content />
+    <meta property="og:image:width" content />
+    <meta property="og:image:height" content />
+    <meta property="og:image:type" content />
+    <meta name="twitter:card" content />
+    <meta name="twitter:label1" content />
+    <meta name="twitter:data1" content />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/vue-toasted@1.1.28/dist/vue-toasted.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.0.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/aos@next/dist/aos.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.0.17/dist/purify.min.js"></script>
+
+
+    <style>
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <div class="containter flex items-center justify-center text-xs" id="app">
+        <div id="loadingScreen" v-if="isLoading" class="fixed inset-0 bg-[#F7F0E6] flex items-center justify-center z-50">
+            <div class="w-16 h-16 border-4 border-gray-200 border-t-4 border-t-[#C0C5AC] rounded-full animate-spin"></div>
+        </div>
+        <!--card -->
+        <section class="invitation-card text-center w-full md:max-w-[400px] max-w-screen h-max-screen text-normal" v-if="!isLoading">
+            <!-- top cover -->
+            <section class="h-screen md:h-screen bg-[#F7F0E6]" data-aos="fade-up">
+                <div class="pt-5 px-8 pb-8">
+                    <div class="flex justify-center items-center pt-14 pb-5 " data-aos="fade-up" data-aos-duration="2000">
+                        <div class="bg-cover border-8 rounded-b-3xl rounded-t-full pt-14 px-3 w-9/12 overflow-hidden h-[300px]"
+                            v-if="dataSection?.background_image?.length > 0" :style="{ backgroundImage: 'url(' + imageCover + ')' }">
+                            <!-- <img :src="dataSection?.background_image[0]?.photo" alt="Wedding Image" class="h-cover" /> -->
+                        </div>
+                    </div>
+    
+                    <div class="">
+                        <div class="" data-aos="fade-up" data-aos-duration="2000">
+                            <h2 class="font-pinyon text-2xl" v-if="dataSection?.section_cover?.salam"
+                                v-text="dataSection?.section_cover?.salam"></h2>
+                        </div>
+                    </div>
+                    <div class="" data-aos="fade-up" data-aos-duration="2000">
+                        <h1 class="font-alice text-3xl text-[#C0C5AC]" :style="{ fontFamily: fontCustom }"
+                            v-if="dataSection?.section_mempelai?.nama_panggilan_pria && dataSection?.section_mempelai?.nama_panggilan_wanita"
+                            v-text="`${dataSection?.section_mempelai?.nama_panggilan_wanita} & ${dataSection?.section_mempelai?.nama_panggilan_pria}`">
+                        </h1>
+                    </div>
+                    <p class="pb-10" v-if="dataSection?.section_cover?.tanggal_cover"
+                        v-text="dataSection?.section_cover?.tanggal_cover" data-aos="fade-up" data-aos-duration="2000"></p>
+                    <p class="pb-6" data-aos="fade-up" data-aos-duration="2000">Kepada Yth: {{guestName || 'Nama Tamu'}}</p>
+    
+                    <div class="items-center h-fit px-10">
+                        <button
+                            class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start" @click="openInvitation()">
+                            <i class="fa-solid fa-heart text-white mr-2"></i>
+                            <span class="flex-1 text-center">Buka Undangan</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- detail content -->
+            <section id="detailContent" v-show="isInvitation" class="detail-content h-fit">
+                <!-- cover -->
+                <section class="h-fit relative bg-[#F7F0E6]" v-show="dataSection?.section_mempelai?.is_active">
+                    <div class="p-8 pt-16 border-0">
+                        <div class="flex justify-center" data-aos="fade-up" data-aos-duration="2000">
+                            <img src="./assets/img/WS-02-4.png" alt="" class="w-40">
+                        </div>
+                        <p class="pt-10 text-base">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم</p>
+                        <p class="pt-3 text-2xl" v-if="dataSection?.section_cover?.title_opening" v-text="dataSection?.section_cover?.title_opening" data-aos="fade-up" data-aos-duration="2000" :style="{ fontFamily: fontCustom }"></p>
+                        <p class="pt-3" data-aos="fade-up" data-aos-duration="2000">Maha Suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan. Ya Allah semoga ridho-Mu tercurah mengiringi pernikahan kami:</p>
+                    
+                        <div class="data-mempelai">
+                            <div class="flex justify-center items-center pt-14 pb-5">
+                                <div class="relative w-8/12 overflow-hidden rounded-[50px] bg-cover bg-center" data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_mempelai?.sort_mempelai == 'wanita'">
+                                    <div class="bg-cover border-8 rounded-[50px] pt-14 px-3 h-[250px]" :style="{ backgroundImage: 'url(' + imageGroom + ')' }">
+                                    </div>
+                                </div>
+    
+                                <div v-else class="relative w-8/12 overflow-hidden rounded-[50px]  bg-cover bg-center" data-aos="fade-up" data-aos-duration="2000">
+                                    <div class="bg-cover border-8 rounded-[50px] pt-14 px-3 h-[250px]" :style="{ backgroundImage: 'url(' + imageBride + ')' }">
+                                    </div>
+                                </div>
+                            </div>
+                            
+    
+                            <div class="absolute bottom-[60%] md:bottom-[60%] right-[10%] lg:right-[10%] z-10 transform translate-x-1/4 w-1/4 ">
+                                <img src="./assets/img/WS-02-7.png" alt="Flowers" class="w-full" data-aos="fade-up" data-aos-duration="2000"/>
+                            </div>
+        
+                            <div v-if="dataSection?.section_mempelai?.sort_mempelai == 'wanita'" class="" data-aos="fade-up" data-aos-duration="2000">
+                                <h2 class="font-pinyon text-3xl text-[#BEC4AA]" v-if="dataSection?.section_mempelai?.nama_panggilan_wanita"
+                                    v-text="dataSection?.section_mempelai?.nama_panggilan_wanita"></h2>
+                            </div>
+    
+                            <div v-else class="" data-aos="fade-up" data-aos-duration="2000">
+                                <h2 class="font-pinyon text-3xl text-[#BEC4AA]" v-if="dataSection?.section_mempelai?.nama_panggilan_pria"
+                                    v-text="dataSection?.section_mempelai?.nama_panggilan_pria"></h2>
+                            </div>
+        
+                            <div v-if="dataSection?.section_mempelai?.sort_mempelai == 'wanita'" class="" data-aos="fade-up" data-aos-duration="2000">
+                                <h1  class="font-alice text-xl text-[#BEC4AA]"
+                                    v-if="dataSection?.section_mempelai?.nama_lengkap_wanita" v-html="sanitizedNamaWanita" :style="{ fontFamily: fontCustom }">
+                                </h1>
+                            </div>
+    
+                            <div v-else class="" data-aos="fade-up" data-aos-duration="2000">
+                                <h1 v-else  class="font-alice text-xl text-[#BEC4AA]"
+                                    v-if="dataSection?.section_mempelai?.nama_lengkap_pria" v-html="sanitizedNamaPria" :style="{ fontFamily: fontCustom }">
+                                </h1>
+                            </div>
+    
+                            <div class="" v-if="dataSection?.section_mempelai?.sort_mempelai == 'wanita'">
+                                <p class="pt-3" data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_mempelai?.profil_wanita"  v-html="sanitizedProfilWanita"></p>
+                            </div>
+    
+                            <div class="" v-else>
+                                <p v-else class="pt-3" data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_mempelai?.profil_pria" v-html="sanitizedProfilPria"></p>
+                            </div>
+    
+                            <div class="" v-if="dataSection?.section_mempelai?.sort_mempelai == 'wanita'">
+                                <p class="font-semibold pt-2" data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_mempelai?.ig_wanita" v-text="'Instagram ' + dataSection?.section_mempelai?.ig_wanita"></p>
+                            </div>
+    
+                            <div class="" v-else>
+                                <p v-else class="font-semibold pt-2" data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_mempelai?.ig_pria" v-text="'Instagram ' + dataSection?.section_mempelai?.ig_pria"></p>
+                            </div>
+    
+                            <div class="pt-10" data-aos="fade-up" data-aos-duration="2000">
+                                <h1 class="font-alice text-4xl text-[#BEC4AA]"> &
+                                </h1>
+                            </div>
+                        </div>
+    
+                        <div class="data-mempelai pb-20">
+                            <div class="flex justify-center items-center pt-14 pb-5">
+                                <div class="relative w-8/12 overflow-hidden rounded-[50px] bg-cover bg-center" data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_mempelai?.sort_mempelai == 'wanita'">
+                                    <div class="bg-cover border-8 rounded-[50px] pt-14 px-3 h-[250px]" :style="{ backgroundImage: 'url(' + imageBride + ')' }">
+                                    </div>
+                                </div>
+    
+                                <div v-else class="relative w-8/12 overflow-hidden rounded-[50px] bg-cover bg-center" data-aos="fade-up" data-aos-duration="2000">
+                                    <div class="bg-cover border-8 rounded-[50px] pt-14 px-3 h-[250px]" :style="{ backgroundImage: 'url(' + imageGroom + ')' }">
+                                    </div>
+                                </div>
+                            </div>
+                            
+    
+                            <div class="absolute bottom-[18%] md:bottom-[18%] left-8 lg:left-8 z-10 transform translate-x-1/4 w-1/4 " data-aos="fade-up" data-aos-duration="2000">
+                                <img src="./assets/img/WS-02-8.png" alt="Flowers" class="w-full" data-aos="fade-up" data-aos-duration="2000"/>
+                            </div>
+        
+                            <div v-if="dataSection?.section_mempelai?.sort_mempelai == 'wanita'" class="" data-aos="fade-up" data-aos-duration="2000">
+                                <h2 class="font-pinyon text-3xl text-[#BEC4AA]" v-if="dataSection?.section_mempelai?.nama_panggilan_pria"
+                                    v-text="dataSection?.section_mempelai?.nama_panggilan_pria"></h2>
+                            </div>
+    
+                            <div v-else class="" data-aos="fade-up" data-aos-duration="2000">
+                                <h2 class="font-pinyon text-3xl text-[#BEC4AA]" v-if="dataSection?.section_mempelai?.nama_panggilan_wanita"
+                                    v-text="dataSection?.section_mempelai?.nama_panggilan_wanita"></h2>
+                            </div>
+        
+                            <div v-if="dataSection?.section_mempelai?.sort_mempelai == 'wanita'" class="" >
+                                <h1 data-aos="fade-up" data-aos-duration="2000" class="font-alice text-xl text-[#BEC4AA]"
+                                    v-if="dataSection?.section_mempelai?.nama_lengkap_pria" v-html="sanitizedNamaPria" :style="{ fontFamily: fontCustom }">
+                                </h1>
+                            </div>
+    
+                            <div v-else class="" data-aos="fade-up" data-aos-duration="2000">
+                                <h1 v-else data-aos="fade-up" data-aos-duration="2000"  class="font-alice text-xl text-[#BEC4AA]"
+                                    v-if="dataSection?.section_mempelai?.nama_lengkap_wanita" v-html="sanitizedNamaWanita" :style="{ fontFamily: fontCustom }">
+                                </h1>
+                            </div>
+    
+                            <div class="" v-if="dataSection?.section_mempelai?.sort_mempelai == 'wanita'">
+                                <p class="pt-3" data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_mempelai?.profil_pria"  v-html="sanitizedProfilPria"></p>
+                            </div>
+    
+                            <div class="" v-else>
+                                <p v-else class="pt-3" data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_mempelai?.profil_wanita" v-html="sanitizedProfilWanita"></p>
+                            </div>
+    
+                            <div class="" v-if="dataSection?.section_mempelai?.sort_mempelai == 'wanita'">
+                                <p class="font-semibold pt-2" data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_mempelai?.ig_pria" v-text="'Instagram ' + dataSection?.section_mempelai?.ig_pria"></p>
+                            </div>
+    
+                            <div class="" v-else>
+                                <p v-else class="font-semibold pt-2" data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_mempelai?.ig_wanita" v-text="'Instagram ' + dataSection?.section_mempelai?.ig_wanita"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- section pembuka (countdown) -->
+                <section class="h-fit relative bg-[#BEC4AA] text-white" v-show="dataSection?.section_pembuka?.is_active">
+                    <div class="p-8">
+                        <div class="flex justify-center pt-20" data-aos="fade-up" data-aos-duration="2000">
+                            <img src="./assets/img/WS-02-6.png" alt="" class="w-1/3">
+                        </div>
+    
+                        <h2 class="pt-5 text-3xl font-alice" v-if="dataSection?.section_pembuka?.title_guest" v-text="dataSection?.section_pembuka?.title_guest" data-aos="fade-up" data-aos-duration="2000" :style="{ fontFamily: fontCustom }"></h2>
+    
+                        <div class="font-alice" data-aos="fade-up" data-aos-duration="2000">
+                            <div class="grid grid-cols-4 gap-8 text-center">
+                                <!-- Days -->
+                                <div class="text-white rounded-lg p-6">
+                                  <p class="text-4xl">{{ days }}</p>
+                                  <p class="text-xs font-poppins">Hari</p>
+                                </div>
+                                
+                                <!-- Hours -->
+                                <div class="text-white rounded-lg p-6">
+                                  <p class="text-4xl">{{ hours }}</p>
+                                  <p class="text-xs font-poppins">Jam</p>
+                                </div>
+                            
+                                <!-- Minutes -->
+                                <div class="text-white rounded-lg p-6">
+                                  <p class="text-4xl">{{ minutes }}</p>
+                                  <p class="text-xs font-poppins">Menit</p>
+                                </div>
+                            
+                                <!-- Seconds -->
+                                <div class="text-white rounded-lg p-6">
+                                  <p class="text-4xl">{{ seconds }}</p>
+                                  <p class="text-xs font-poppins">Detik</p>
+                                </div>
+                              </div>
+                        </div>
+    
+                        <div class="text-center pt-2">
+                            <p v-if="dataSection?.section_pembuka?.pembuka" v-text="dataSection?.section_pembuka?.pembuka"></p>
+                        </div>
+                    </div>
+
+                    <!-- section schedule -->
+                    <section v-show="dataSection?.section_schedule?.is_active">
+                        <div v-if="dataSection?.section_schedule?.schedule?.length > 0" class="flex justify-center items-center pt-14 pb-5" data-aos="fade-up" data-aos-duration="2000">
+                            <div  class="bg-[#F7F0E6] bg-schedule border-[15px] rounded-b-3xl rounded-t-full pb-10 pt-14 px-3 w-10/12 overflow-hidden h-fit">
+                                <div class="flex justify-center pt-2" data-aos="fade-up" data-aos-duration="2000">
+                                    <img src="./assets/img/WS-02-5.png" alt="" class="w-1/2">
+                                </div>   
+                                
+                                <h2 class="text-2xl font-alice pt-2 text-[#BEC4AA]" v-html="sanitizedJudul(dataSection?.section_schedule?.schedule[0]?.judul)"  data-aos="fade-up" data-aos-duration="2000" :style="{ fontFamily: fontCustom }"></h2>
+
+                                <div class="text-3xl font-alice text-black py-3"  data-aos="fade-up" data-aos-duration="2000" v-if="hariNikah" v-text="hariNikah">
+                                </div>
+
+                                <div class=""  data-aos="fade-up" data-aos-duration="2000">
+                                    <div class="flex justify-center items-center space-x-4 text-center">
+                                        <div class="text-xl text-black font-alice" v-if="bulanNikah" v-text="bulanNikah">
+                                        </div>
+                                    
+                                        <div class="w-[2px] bg-[#BEC3AA] h-[60px]"></div>
+
+                                        <div class="text-5xl font-cormorant font-semibold text-[#BEC4AA] p-3" v-if="tanggalNikahDay" v-text="tanggalNikahDay">
+                                        </div>
+
+                                        <div class="w-[2px] bg-[#BEC3AA] h-[60px]"></div>
+
+                                        <div class="text-2xl text-black font-alice" v-if="tahunNikah" v-text="tahunNikah">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="text-center text-black pt-2 pb-6"  data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_schedule?.schedule[0]?.waktu" v-html="sanitizedWaktu(dataSection?.section_schedule?.schedule[0]?.waktu)"></p>
+
+                                <div class="text-black"  data-aos="fade-up" data-aos-duration="2000">
+                                    <i class="fa-solid fa-location-dot fa-xl" style="color: #bec4a9;"></i>
+
+                                    <p class="pt-2 pb-4 font-bold" v-if="dataSection?.section_schedule?.schedule[0]?.lokasi" v-html="sanitizedLokasi(dataSection?.section_schedule?.schedule[0]?.lokasi)"></p>
+
+                                    <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                        <div
+                                        v-html="dataSection?.section_schedule?.schedule[0]?.embed_map"
+                                        class="map-embed pb-4"
+                                        v-if="dataSection?.section_schedule?.schedule[0].embed_map"
+                                        ></div>
+
+                                        <a href="dataSection?.section_schedule?.schedule[0]?.link_map">
+                                            <button
+                                            class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start">
+                                            <i class="fa-solid fa-location-dot" style="color: white;"></i>
+                                            <span class="flex-1 text-center" v-if="dataSection?.section_schedule?.title_location_clicked" v-text="dataSection?.section_schedule?.title_location_clicked"></span>
+                                        </button>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </section>  
+
+                    <!-- section schedule 2-->
+                    <section v-show="dataSection?.section_schedule?.is_active">
+                        <div v-if="dataSection?.section_schedule?.schedule?.length > 0" v-for="(resepsi,index) in dataSection?.section_schedule?.schedule.slice(1)" class="flex justify-center items-center pb-5" data-aos="fade-up" data-aos-duration="2000">
+                            <div  class="bg-[#F7F0E6] bg-schedule border-[15px] rounded-3xl pb-10 pt-14 px-3 w-10/12 overflow-hidden h-fit">                                
+                                <h2 class="text-2xl font-alice text-[#BEC4AA]" v-html="sanitizedJudul(resepsi.judul)"  data-aos="fade-up" data-aos-duration="2000" :style="{ fontFamily: fontCustom }"></h2>
+
+                                <div class="text-3xl font-alice text-black py-3"  data-aos="fade-up" data-aos-duration="2000" v-if="hariNikah" v-text="hariNikah">
+                                </div>
+
+                                <div class=""  data-aos="fade-up" data-aos-duration="2000">
+                                    <div class="flex justify-center items-center space-x-4 text-center">
+                                        <div class="text-xl text-black font-alice" v-if="resepsi.bulanNikah" v-text="resepsi.bulanNikah">
+                                        </div>
+                                    
+                                        <div class="w-[2px] bg-[#BEC3AA] h-[60px]"></div>
+
+                                        <div class="text-5xl font-cormorant font-semibold text-[#BEC4AA] p-3" v-if="resepsi.tanggalNikahDay" v-text="resepsi.tanggalNikahDay">
+                                        </div>
+
+                                        <div class="w-[2px] bg-[#BEC3AA] h-[60px]"></div>
+
+                                        <div class="text-2xl text-black font-alice" v-if="resepsi.tahunNikah" v-text="resepsi.tahunNikah">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="text-center text-black pt-2 pb-6"  data-aos="fade-up" data-aos-duration="2000" v-if="resepsi.waktu" v-html="resepsi.waktu"></p>
+
+                                <div class="text-black"  data-aos="fade-up" data-aos-duration="2000">
+                                    <i class="fa-solid fa-location-dot fa-xl" style="color: #bec4a9;"></i>
+
+                                    <p class="pt-2 pb-4 font-bold" v-if="resepsi.lokasi" v-html="resepsi.lokasi"></p>
+
+                                    <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                        <div
+                                        v-html="resepsi.embed_map"
+                                        class="map-embed pb-4"
+                                        v-if="resepsi.embed_map"
+                                        ></div>
+
+                                        <a href="resepsi.link_map">
+                                            <button
+                                            class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start">
+                                            <i class="fa-solid fa-location-dot" style="color: white;"></i>
+                                            <span class="flex-1 text-center" v-if="dataSection?.section_schedule?.title_location_clicked" v-text="dataSection?.section_schedule?.title_location_clicked"></span>
+                                        </button>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </section>  
+
+                    <!-- section streaming -->
+                    <section v-show="dataSection?.section_live_streaming?.is_active" class="pb-2">
+                        <div class="flex justify-center items-center pb-5" data-aos="fade-up" data-aos-duration="2000">
+                            <div  class="bg-[#F7F0E6] bg-schedule border-[15px] rounded-3xl pb-10 pt-5 px-3 w-10/12 overflow-hidden h-fit">                                
+                                <h2 class="text-2xl font-alice text-[#BEC4AA]" v-if="dataSection?.section_live_streaming?.title_live_streaming" v-text="dataSection?.section_live_streaming?.title_live_streaming" data-aos="fade-up" data-aos-duration="2000" :style="{ fontFamily: fontCustom }"></h2>
+
+                                <div v-if="dataSection?.section_live_streaming?.streaming_yt" class="text-black pt-5" data-aos="fade-up" data-aos-duration="2000">
+                                    <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                        <a :href="dataSection?.section_live_streaming?.streaming_yt">
+                                            <button
+                                            class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start">
+                                            <i class="fa-brands fa-youtube" style="color: #ffffff;"></i>
+                                            <span class="flex-1 text-center" v-if="dataSection?.section_live_streaming?.btn_streaming_yt" v-text="dataSection?.section_live_streaming?.btn_streaming_yt"></span>
+                                        </button>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div v-if="dataSection?.section_live_streaming?.streaming_ig" class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                    <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                        <a :href="dataSection?.section_live_streaming?.streaming_ig">
+                                            <button
+                                            class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start">
+                                            <i class="fa-brands fa-instagram" style="color: #ffffff;"></i>
+                                            <span class="flex-1 text-center" v-if="dataSection?.section_live_streaming?.btn_streaming_ig" v-text="dataSection?.section_live_streaming?.btn_streaming_ig"></span>
+                                        </button>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div v-if="dataSection?.section_live_streaming?.streaming_tt" class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                    <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                        <a :href="dataSection?.section_live_streaming?.streaming_tt">
+                                            <button
+                                            class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start">
+                                            <i class="fa-brands fa-tiktok" style="color: #ffffff;"></i>
+                                            <span class="flex-1 text-center" v-if="dataSection?.section_live_streaming?.btn_streaming_tiktok" v-text="dataSection?.section_live_streaming?.btn_streaming_tiktok"></span>
+                                        </button>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div v-if="dataSection?.section_live_streaming?.streaming_zoom" class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                    <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                        <a :href="dataSection?.section_live_streaming?.streaming_zoom">
+                                            <button
+                                            class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start">
+                                            <i class="fa-solid fa-video" style="color: #ffffff;"></i>
+                                            <span class="flex-1 text-center" v-if="dataSection?.section_live_streaming?.btn_streaming_zoom" v-text="dataSection?.section_live_streaming?.btn_streaming_zoom"></span>
+                                        </button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- section filter instagram -->
+                    <section v-show="dataSection?.section_filter_ig?.is_active" class="pb-2">
+                        <div class="flex justify-center items-center pb-5" data-aos="fade-up" data-aos-duration="2000">
+                            <div  class="bg-[#F7F0E6] bg-schedule border-[15px] rounded-3xl pb-10 pt-5 px-3 w-10/12 overflow-hidden h-fit">                                
+                                <h2 class="text-2xl font-alice text-[#BEC4AA]" v-if="dataSection?.section_filter_ig?.title_filter_ig" v-text="dataSection?.section_filter_ig?.title_filter_ig" data-aos="fade-up" data-aos-duration="2000" :style="{ fontFamily: fontCustom }"></h2>
+
+                                <div v-if="dataSection?.section_filter_ig?.link_filter_ig" class="text-black pt-5" data-aos="fade-up" data-aos-duration="2000">
+                                    <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                        <a :href="dataSection?.section_filter_ig?.link_filter_ig">
+                                            <button
+                                            class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start">
+                                            <i class="fa-brands fa-instagram" style="color: #ffffff;"></i>
+                                            <span class="flex-1 text-center" v-if="dataSection?.section_filter_ig?.btn_filter_ig" v-text="dataSection?.section_filter_ig?.btn_filter_ig"></span>
+                                        </button>
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- section turut mengundang -->
+                    <section v-show="dataSection?.section_turut_mengundang?.is_active" class="pb-10">
+                        <div class="p-8">
+                            <p class="pt-5 font-alice text-2xl text-white" v-if="dataSection?.section_turut_mengundang?.title_special_guest" v-text="dataSection?.section_turut_mengundang?.title_special_guest" :style="{ fontFamily: fontCustom }"></p>
+                            <p class="pt-2" v-if="dataSection?.section_turut_mengundang?.turut_mengundang" v-html="sanitizedTurutUndang"></p>
+                        </div>
+                    </section>
+                </section>   
+                
+                <!-- section prokes -->
+                <section v-if="dataSection?.section_prokes?.is_active" class="h-fit relative bg-[#F7F0E6] text-black" >
+                    <div class="p-8">
+                        <div class="flex justify-center pt-20" data-aos="fade-up" data-aos-duration="2000">
+                            <img src="./assets/img/WS-02-4.png" alt="" class="w-1/3">
+                        </div>
+
+                        <h2 class="text-3xl py-3 font-alice text-[#BEC3AA]" v-if="dataSection?.section_prokes?.title_prokes"  v-text="'-' + dataSection?.section_prokes?.title_prokes + '-'" :style="{ fontFamily: fontCustom }"></h2>
+
+                        <p class="pt-2 text-center text-[#BEC3AA]" v-if="dataSection?.section_prokes?.label_prokes" v-text="dataSection?.section_prokes?.label_prokes"></p>
+
+                        <div class="flex justify-center" v-if="dataSection?.section_prokes?.prokes_url">
+                            <img :src="dataSection?.section_prokes?.prokes_url" alt=""
+                                class="pt-5 w-8/12">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- section walimah -->
+                <section v-show="dataSection?.section_walimah?.is_active" class="h-fit relative bg-[#F7F0E6] text-black" >
+                    <div class="p-8">
+                        <h2 class="text-3xl py-3 font-alice text-[#BEC3AA]" v-if="dataSection?.section_walimah?.title_walimah"  v-text="'-' + dataSection?.section_walimah?.title_walimah + '-'" :style="{ fontFamily: fontCustom }"></h2>
+
+                        <div class="flex justify-center" v-if="dataSection?.section_walimah?.walimah_url">
+                            <img :src="dataSection?.section_walimah?.walimah_url" alt=""
+                                class="pt-5 w-8/12">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- section informasi tamu -->
+                <section v-show="dataSection?.section_informasi_tamu?.is_active" class="h-fit relative bg-[#F7F0E6] text-black">
+                    <div class="p-8">
+                        <div class="flex justify-center pt-5" data-aos="fade-up" data-aos-duration="2000">
+                            <img src="./assets/img/WS-02-4.png" alt="" class="w-1/3">
+                        </div>
+
+                        <h2 class="text-3xl py-3 font-alice text-[#BEC3AA]" v-if="dataSection?.section_informasi_tamu?.title_more_info" v-text="dataSection?.section_informasi_tamu?.title_more_info" :style="{ fontFamily: fontCustom }"></h2>
+
+                        <p class="pt-2" v-if="dataSection?.section_informasi_tamu?.informasi_tamu" v-text="dataSection?.section_informasi_tamu?.informasi_tamu"></p>
+                    </div>
+                </section>
+                
+                <!-- section story -->
+                <section class="h-fit relative bg-[#F7F0E6] text-black" v-show="dataSection?.section_kata_mutiara?.is_active || dataSection?.section_story?.is_active">
+                    <div class="p-8">
+                        <div class="flex justify-center pt-5" data-aos="fade-up" data-aos-duration="2000">
+                            <img src="./assets/img/WS-02-4.png" alt="" class="w-1/3">
+                        </div>
+
+                        <h2 class="text-3xl py-3 font-alice text-[#BEC3AA]" v-if="dataSection?.section_story?.title_story"  v-text="'-' + dataSection?.section_story?.title_story + '-'" :style="{ fontFamily: fontCustom }"></h2>
+
+                        <!-- section kata mutiara -->
+                        <section v-if="dataSection?.section_kata_mutiara?.is_active">
+                            <p class="font-italic font-alice" v-if="dataSection?.section_kata_mutiara?.kata_mutiara" v-text="dataSection?.section_kata_mutiara?.kata_mutiara"></p>
+                        </section>                        
+                    </div>
+                    <section v-if="dataSection?.section_story?.is_active" class="pb-10">
+                        <div v-if="dataSection?.section_story?.stories?.length > 0" v-for="(story, index) in dataSection?.section_story?.stories" :key="index" class="pb-5" data-aos="fade-up" data-aos-duration="2000">
+                            <div v-if="story.photo && !story.photo.includes('512')" class="py-3 px-10">
+                                <div>
+                                    <img :src="story.photo" alt="">
+                                </div>
+                            </div>
+                            <div class="flex justify-center items-center">
+                                <div  class="bg-[#F7F0E6] bg-schedule border-[15px] rounded-3xl pb-5 pt-5 px-3 w-10/12 overflow-hidden h-fit text-start text-black">                                
+                                    <h2 class="text-xl font-alice"data-aos="fade-up" data-aos-duration="2000" v-if="story.judul" v-text="story.judul" :style="{ fontFamily: fontCustom }"></h2>
+                                    <p class="pt-2" v-if="story.tanggal" v-text="story.tanggal"></p>
+                                    <p class="pt-2" v-if="story.cerita" v-text="story.cerita"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+
+                <!-- section wedding gift -->
+                <section v-if="dataSection?.section_amplop?.is_active || dataSection?.section_gift_catalog" class="h-fit relative bg-[#BEC4AA] text-white">
+                    <div class="p-8">
+                        <div class="flex justify-center pt-20" data-aos="fade-up" data-aos-duration="2000">
+                            <i class="fa-solid fa-gift fa-4x" style="color: #ffffff;"></i>
+                        </div>
+                        <p class="pt-3 text-2xl font-alice" v-if="dataSection?.section_amplop?.title_gift" v-text="dataSection?.section_amplop?.title_gift" :style="{ fontFamily: fontCustom }"></p>
+                        <p class="pt-2" v-f="dataSection?.section_amplop?.label_gift" v-text="dataSection?.section_amplop?.label_gift"></p>
+                        <div class="pt-3">
+                            <div class="pb-5" data-aos="fade-up" data-aos-duration="2000">
+                                <div class="flex justify-center items-center">
+                                    <div v-if="dataSection?.section_amplop?.rekening?.length > 0" class="bg-[#F7F0E6] bg-schedule border-[15px] rounded-3xl pb-5 pt-5 px-3 overflow-hidden h-fit text-start text-black ">
+                                        <!-- <div class="rekening" v-for="(rek, index) in dataSection?.section_amplop?.rekening">
+                                            <div class="flex flex-col justify-center items-center" :key="index">
+                                                <img v-if="rek.logo" :src="rek.logo" alt="Mandiri Logo" class="w-1/3" data-aos="fade-up" data-aos-duration="2000">
+                                                <p class="pt-3 text-center" v-if="rek.bank" v-text="'Bank ' + rek.bank" data-aos="fade-up" data-aos-duration="2000"></p>
+                                                <p class="pt-2 text-center" v-if="rek.no_rek" v-text="'No Rekening '+ rek.no_rek" data-aos="fade-up" data-aos-duration="2000"></p>
+                                                <p class="pt-2 text-center" v-if="rek.an" data-aos="fade-up" data-aos-duration="2000">a.n <b v-text="rek.an"></b></p>
+                                                <div class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                                    <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                                        <button class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start">
+                                                            <span class="flex-1 text-center">Copy Nomor Rekening</span>
+                                                            <i class="fa-solid fa-copy ps-4" style="color: #ffffff;"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="py-4 px-4">
+                                                <hr class="border-black">
+                                            </div>
+                                        </div> -->
+                                        <div class="rekening" v-for="(rek, index) in dataSection?.section_amplop?.rekening" :key="index">
+                                            <div class="flex flex-col justify-center items-center">
+                                                <img v-if="rek.logo" :src="rek.logo" alt="Bank Logo" class="w-1/3">
+                                                <p class="pt-3 text-center" v-if="rek.bank" v-text="'Bank ' + rek.bank"></p>
+                                                <p class="pt-2 text-center" v-if="rek.no_rek" v-text="'No Rekening '+ rek.no_rek"></p>
+                                                <p class="pt-2 text-center" v-if="rek.an">a.n <b v-text="rek.an"></b></p>
+                                                <div class="text-black pt-3">
+                                                    <div class="items-center h-fit px-2">
+                                                        <button 
+                                                            class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start"
+                                                            @click="copyRekening(rek.no_rek, index)">
+                                                            <span class="flex-1 text-center">
+                                                                {{ copiedIndex === index ? 'Berhasil Disalin' : 'Copy Nomor Rekening' }}
+                                                            </span>
+                                                            <i class="fa-solid fa-copy ps-4" style="color: #ffffff;"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="py-4 px-4">
+                                                <hr class="border-black">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="e-wallet">
+                                            <div class="dana" v-show="dataSection?.section_amplop?.akun_dana">
+                                                <div class="flex flex-col justify-center items-center">
+                                                    <p class="pt-3 text-center" v-if="dataSection?.section_amplop?.akun_dana" v-text="dataSection?.section_amplop?.akun_dana" data-aos="fade-up" data-aos-duration="2000"></p>
+                                                    <div class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                                        <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                                            <button class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start" @click="extractAndCopy(dataSection?.section_amplop?.akun_dana, 'dana')">
+                                                                <span class="flex-1 text-center">
+                                                                    {{ copiedStatus['dana'] ? 'Berhasil Disalin' : 'Copy Nomor Rekening' }}
+                                                                </span>
+                                                                <i class="fa-solid fa-copy ps-4" style="color: #ffffff;"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="py-4 px-4">
+                                                    <hr class="border-black">
+                                                </div>
+                                            </div>
+
+                                            <div class="ovo" v-show="dataSection?.section_amplop?.akun_ovo">
+                                                <div class="flex flex-col justify-center items-center">
+                                                    <p class="pt-3 text-center" v-if="dataSection?.section_amplop?.akun_ovo" v-text="dataSection?.section_amplop?.akun_ovo" data-aos="fade-up" data-aos-duration="2000"></p>
+                                                    <div class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                                        <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                                            <button class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start" @click="extractAndCopy(dataSection?.section_amplop?.akun_ovo, 'ovo')">
+                                                                <span class="flex-1 text-center">
+                                                                    {{ copiedStatus['ovo'] ? 'Berhasil Disalin' : 'Copy Nomor Rekening' }}
+                                                                </span>
+                                                                <i class="fa-solid fa-copy ps-4" style="color: #ffffff;"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="py-4 px-4">
+                                                    <hr class="border-black">
+                                                </div>
+                                            </div>
+
+                                            <div class="gopay" v-show="dataSection?.section_amplop?.akun_gopay">
+                                                <div class="flex flex-col justify-center items-center">
+                                                    <p class="pt-3 text-center" v-if="dataSection?.section_amplop?.akun_gopay" v-text="dataSection?.section_amplop?.akun_gopay" data-aos="fade-up" data-aos-duration="2000"></p>
+                                                    <div class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                                        <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                                            <button class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start" @click="extractAndCopy(dataSection?.section_amplop?.akun_gopay, 'gopay')">
+                                                                <span class="flex-1 text-center">
+                                                                    {{ copiedStatus['gopay'] ? 'Berhasil Disalin' : 'Copy Nomor Rekening' }}
+                                                                </span>
+                                                                <i class="fa-solid fa-copy ps-4" style="color: #ffffff;"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="py-4 px-4">
+                                                    <hr class="border-black">
+                                                </div>
+                                            </div>
+
+                                            <div class="link_aja" v-show="dataSection?.section_amplop?.akun_link_aja">
+                                                <div class="flex flex-col justify-center items-center">
+                                                    <p class="pt-3 text-center" v-if="dataSection?.section_amplop?.akun_link_aja" v-text="dataSection?.section_amplop?.akun_link_aja" data-aos="fade-up" data-aos-duration="2000"></p>
+                                                    <div class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                                        <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                                            <button class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start" @click="extractAndCopy(dataSection?.section_amplop?.akun_link_aja, 'link_aja')">
+                                                                <span class="flex-1 text-center">
+                                                                    {{ copiedStatus['link_aja'] ? 'Berhasil Disalin' : 'Copy Nomor Rekening' }}
+                                                                </span>
+                                                                <i class="fa-solid fa-copy ps-4" style="color: #ffffff;"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="py-4 px-4">
+                                                    <hr class="border-black">
+                                                </div>
+                                            </div>
+
+                                            <div class="shopeepay" v-show="dataSection?.section_amplop?.akun_shopeepay">
+                                                <div class="flex flex-col justify-center items-center">
+                                                    <p class="pt-3 text-center" v-if="dataSection?.section_amplop?.akun_shopeepay" v-text="dataSection?.section_amplop?.akun_shopeepay" data-aos="fade-up" data-aos-duration="2000"></p>
+                                                    <div class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                                        <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                                            <button class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start" @click="extractAndCopy(dataSection?.section_amplop?.akun_shopeepay, 'shopeepay')">
+                                                                <span class="flex-1 text-center">
+                                                                    {{ copiedStatus['shopeepay'] ? 'Berhasil Disalin' : 'Copy Nomor Rekening' }}
+                                                                </span>
+                                                                <i class="fa-solid fa-copy ps-4" style="color: #ffffff;"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="py-4 px-4">
+                                                    <hr class="border-black">
+                                                </div>
+                                            </div>
+
+                                            <div class="isaku" v-show="dataSection?.section_amplop?.akun_isaku">
+                                                <div class="flex flex-col justify-center items-center">
+                                                    <p class="pt-3 text-center" v-if="dataSection?.section_amplop?.akun_isaku" v-text="dataSection?.section_amplop?.akun_isaku" data-aos="fade-up" data-aos-duration="2000"></p>
+                                                    <div class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                                        <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                                            <button class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start" @click="extractAndCopy(dataSection?.section_amplop?.akun_isaku, 'isaku')">
+                                                                <span class="flex-1 text-center">
+                                                                    {{ copiedStatus['isaku'] ? 'Berhasil Disalin' : 'Copy Nomor Rekening' }}
+                                                                </span>
+                                                                <i class="fa-solid fa-copy ps-4" style="color: #ffffff;"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="py-4 px-4">
+                                                    <hr class="border-black">
+                                                </div>
+                                            </div>
+
+                                            <div class="no_wa" v-show="dataSection?.section_amplop?.no_wa">
+                                                <div class="flex flex-col justify-center items-center">
+                                                    <p class="pt-3 text-center" v-if="dataSection?.section_amplop?.no_wa" v-text="dataSection?.section_amplop?.no_wa" data-aos="fade-up" data-aos-duration="2000"></p>
+                                                    <div class="text-black pt-3 px-3" data-aos="fade-up" data-aos-duration="2000">
+                                                        <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                                            <button 
+                                                            class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start"
+                                                            @click="copyNumber(dataSection?.section_amplop?.no_wa, 'wa')">
+                                                            <span class="flex-1 text-center">
+                                                                {{ copiedStatus['wa'] ? 'Berhasil Disalin' : 'Copy Nomor WhatsApp' }}
+                                                            </span>
+                                                            <i class="fa-solid fa-copy ps-4" style="color: #ffffff;"></i>
+                                                        </button>
+                                                        </div>
+                                                        <p class="py-3 text-center" v-if="dataSection?.section_amplop?.n_chat" v-text="dataSection?.section_amplop?.n_chat"></p>
+                                                        <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000" v-if="dataSection?.section_amplop?.btn_chat_wa">
+                                                            <button class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start">
+                                                                <span class="flex-1 text-center" v-text="dataSection?.section_amplop?.btn_chat_wa"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="py-4 px-4">
+                                                    <hr class="border-black">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="kirim-kado px-3 pb-10" v-show="dataSection?.section_gift_catalog?.is_active && dataSection.section_gift_catalog?.alamat_hadiah">
+                                            <div class="flex justify-center pt-5" data-aos="fade-up" data-aos-duration="2000">
+                                                <i class="fa-solid fa-gift fa-3x" style="color: #BEC4AA;"></i>
+                                            </div>
+                                            <p class="pt-2 text-2xl text-center" v-if="dataSection?.section_gift_catalog?.title_send_gift" v-text="dataSection?.section_gift_catalog?.title_send_gift" :style="{ fontFamily: fontCustom }"></p>
+                                            <p class="pt-4 font-bold text-start" v-if="dataSection?.section_gift_catalog?.label_alamat_hadiah" v-text="dataSection?.section_gift_catalog?.label_alamat_hadiah"></p>
+                                            <p class="pt-2 text-justify" v-if="dataSection?.section_gift_catalog?.alamat_hadiah" v-text="dataSection?.section_gift_catalog?.alamat_hadiah"></p>
+
+                                            <div v-if="dataSection?.section_gift_catalog?.btn_send_gift" class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                                <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                                    <a :href="giftCatalogLink">
+                                                        <button
+                                                        class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start">
+                                                        <span class="flex-1 text-center" v-if="dataSection?.section_gift_catalog?.btn_send_gift" v-text="dataSection?.section_gift_catalog?.btn_send_gift"></span>
+                                                    </button>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- section wishes dan section comment, rsvp-->
+                <section class="h-fit relative bg-[#F7F0E6] text-black" v-show="dataSection?.section_guest_book?.is_active || dataSection?.section_rsvp_qr?.is_active">
+                    <div class="p-8">
+                        <div class="flex justify-center pt-20" data-aos="fade-up" data-aos-duration="2000">
+                            <img src="./assets/img/WS-02-4.png" alt="" class="w-1/3">
+                        </div>
+                        <p class="text-2xl text-[#BEC4AA] font-alice pt-3" v-if="dataSection?.section_guest_book?.title_doa" v-text="dataSection?.section_guest_book?.title_doa" :style="{ fontFamily: fontCustom }"></p>
+                        <div class="border bg-white rounded-lg mt-4">
+                            <p class="text-[#BEC4AA] text-center py-5">{{totalComment}} Comments</p>
+                            <hr class="border-[#BEC4AA]">
+                            <form action="" method="POST" class="p-4" @submit.prevent="submitForm">
+                                <!-- Form Nama -->
+                                <div class="form-group guest-name-wrap w-full mb-4 border-[1px] p-2 border-[#BEC4AA] text-start  rounded-lg" data-aos="fade-up" data-aos-duration="1200" data-aos-delay="200">
+                                    <input type="text" name="name" class="" :placeholder="dataSection?.section_guest_book?.label_name" v-model="form.name">
+                                </div>
+            
+                                <!-- Form Write As -->
+                                <div class="form-group guest-name-wrap w-full mb-4 border-[1px] p-2 border-[#BEC4AA] text-start rounded-lg" data-aos="fade-up" data-aos-duration="1200" data-aos-delay="200">
+                                    <input type="text" name="write_as" class="" :placeholder="dataSection?.section_guest_book?.label_write_as" v-model="form.write_as">
+                                </div>
+            
+                                <!-- Form Sosmed -->
+                                <div class="form-group guest-name-wrap w-full mb-4 border-[1px] p-2 border-[#BEC4AA] text-start rounded-lg" data-aos="fade-up" data-aos-duration="1200" data-aos-delay="200">
+                                    <input type="text" name="sosmed" class="" :placeholder="dataSection?.section_guest_book?.label_sosmed" v-model="form.sosmed">
+                                </div>
+            
+                                <!-- Form Comment -->
+                                <div class="form-group guest-comment-wrap w-full border-[1px] p-2 border-[#BEC4AA] mb-4 text-start rounded-lg" data-aos="fade-up" data-aos-duration="1200" data-aos-delay="300">
+                                    <textarea name="comment" class="" :placeholder="dataSection?.section_guest_book?.label_doa" v-model="form.comment"></textarea>
+                                </div>
+            
+                                <div class="w-fit">
+                                    <button type="submit" class="bg-[#BEC4AA] px-5 py-1 rounded-sm text-white" v-if="">Kirim</button>
+                                </div>
+                            </form>
+                            <div v-show="isSendComment" class="border-t-1">
+                                <p class="text-center text-[#61ce70] font-lg font-semibold p-3">Thanks For Your Comment!</p>
+                            </div>
+                            <div v-show="isLoadingSend" class="border-t-1 flex justify-center p-3">
+                                <div id="spinner" class="w-5 h-5 border-4 border-t-4 border-gray-200 border-t-[#3E2723] rounded-full animate-spin"></div>
+                            </div>
+                            <!-- list comment -->
+                            <div v-show="listComment.length > 0" class="comment-wrap overflow-hidden show max-h-96 overflow-y-auto p-4 bg-white text-start border-b rounded-b-md">
+                                <div class="comment-item aos-init aos-animate" :id="'comment' + index" data-aos="fade-up"
+                                    data-aos-duration="1200" v-for="(comment, index) in listComment" :key="index">
+
+                                    <div class="comment-head">
+                                        <p class="comment-name">{{ comment.owner }}
+                                            <i class="fas fa-check"></i>
+                                        </p>
+                                        <small class="comment-date">{{ comment.date_only }}, {{ comment.time_only }}</small>
+                                    </div>
+                                    <div class="comment-body">
+                                        <p class="comment-caption">{{ comment.content }}</p>
+                                    </div>
+                                    <div class="py-4 px-0">
+                                        <hr class="border-black">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--section rsvp -->
+                        <section v-show="dataSection?.section_rsvp_qr?.is_active">
+                            <div class="p-8">
+                                <p class="pt-5 font-alice text-2xl text-[#BEC4AA]" v-if="dataSection?.section_rsvp_qr?.title_rsvp" v-text="dataSection?.section_rsvp_qr?.title_rsvp" :style="{ fontFamily: fontCustom }"></p>
+                                <p class="pt-2" v-if="dataSection?.section_rsvp_qr?.label_rsvp" v-text="dataSection?.section_rsvp_qr?.label_rsvp"></p>
+
+                                <div class="rsvp-body flex justify-center items-center h-64">
+                                    <div id="qrCode" class="mt-2"></div>
+                                </div>
+
+                                <div v-if="dataSection?.section_rsvp_qr?.btn_rsvp" class="text-black pt-3" data-aos="fade-up" data-aos-duration="2000">
+                                    <div class="items-center h-fit px-2" data-aos="fade-up" data-aos-duration="2000">
+                                        <a :href="dataSection?.section_rsvp_qr?.link_qr">
+                                            <button
+                                            class="bg-cover text-white w-full py-2 px-6 rounded-lg transition flex items-center justify-start">
+                                            <span class="flex-1 text-center" v-if="dataSection?.section_rsvp_qr?.btn_rsvp" v-text="dataSection?.section_rsvp_qr?.btn_rsvp"></span>
+                                        </button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </section>
+
+                <!-- section gallery -->
+                <section v="dataSection?.section_gallery?.is_active" class="h-fit relative bg-[#F7F0E6] text-black">
+                    <div class="p-8">
+                        <h2 class="text-2xl font-alice text-center pb-4" v-if="dataSection?.section_gallery?.title_gallery" v-text="dataSection?.section_gallery?.title_gallery" :style="{ fontFamily: fontCustom }"></h2>
+                        <div class="grid grid-cols-3 gap-4">
+                          <img v-for="(photo, index) in dataSection?.section_gallery?.gallery" 
+                               :key="index" 
+                               :src="photo.photo" 
+                               alt="Gallery Photo" 
+                               class="rounded-lg cursor-pointer hover:opacity-80"
+                               @click="openPreview(index)">
+                        </div>
+                    </div>
+
+                    <div v-if="isPreviewOpen" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
+                        <button class="absolute top-5 right-5 text-white text-2xl" @click="closePreview">✕</button>
+                        <div class="relative flex items-center">
+                            <button @click="prevImage" 
+                                    class="absolute left-5 text-white bg-black bg-opacity-50 rounded-full p-2 text-xl">⬅</button>
+                            <img :src="currentImage" alt="Preview" class="max-w-full max-h-screen rounded-lg">
+                            <button @click="nextImage" 
+                                    class="absolute right-5 text-white bg-black bg-opacity-50 rounded-full p-2 text-xl">➡</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- section penutup -->
+                <section class="h-fit relative bg-[#BEC4AA] text-white" v-show="dataSection?.section_penutup?.is_active">
+                    <div class="p-8">
+                        <div class="flex justify-center pt-5" data-aos="fade-up" data-aos-duration="2000">
+                            <img src="./assets/img/WS-02-5.png" alt="" class="w-1/2">
+                        </div>  
+
+                        <p class="pt-2 font-alice text-2xl" v-if="dataSection?.section_penutup?.title_thanks" v-text="dataSection?.section_penutup?.title_thanks" :style="{ fontFamily: fontCustom }"></p>
+
+                        <p class="pt-3" v-if="dataSection?.section_penutup?.penutup" v-text="sanitizedPenutup"></p>
+
+                        <p class="pt-3 font-pinyon text-xl" v-if="dataSection?.section_penutup?.salam_penutup" v-text="dataSection?.section_penutup?.salam_penutup"></p>
+
+                        <p class="pt-3 font-alice text-2xl" v-if="dataSection?.section_penutup?.title_salam_penutup" v-html="sanitizedTitleSalamPenutup"></p>
+
+                        <div v-if="dataSection?.background_image?.length > 0" class="py-3 px-10">
+                            <div>
+                                <img :src="dataSection?.background_image[0].photo" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- section music -->
+                <div
+                v-if="isInvitation && dataSection?.global_data?.music"
+                @click="toggleAudio"
+                class="audio-control bg-[#F7F0E6] p-1.5 fixed z-50 left-4 bottom-10 shadow rounded-full bg-music text-white"
+                >
+                    <i class="fa-solid fa-record-vinyl" style="color: #bec4a9;"></i>
+                </div>
+                <audio
+                    ref="audio"
+                    :src="dataSection?.global_data?.music"
+                    loop
+                ></audio>
+            </section>
+        </section>
+    </div>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Vue({
+                el: '#app',
+                data: {
+                    isLoading: false,
+                    dataSection: {},
+                    guestName: '',
+                    days: 0,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    hariNikah: '',
+                    tanggalNikahDay: '',
+                    bulanNikah: '',
+                    tahunNikah: '',
+                    form: {
+                        name: "",
+                        write_as: "",
+                        sosmed: "",
+                        comment: ""
+                    },
+                    totalComment: 0,
+                    listComment: [],
+                    isSendComment: false,
+                    isLoadingSend: false,
+                    isPreviewOpen: false,
+                    currentImageIndex: 0,
+                    isPlaying: false,
+                    isInvitation: false,
+                    fontCustom: '',
+                    copiedIndex: null,
+                    copiedStatus: {}
+                },
+                computed: {
+                    imageCover(){
+                        return this.dataSection?.background_image[0]?.photo || ''
+                    },
+                    imageGroom() {
+                        return this.dataSection?.section_mempelai?.groom || '';  
+                    },
+                    imageBride() {
+                        return this.dataSection?.section_mempelai?.bride || '';  
+                    },
+                    sanitizedNamaPria() {
+                        return DOMPurify.sanitize(this.dataSection?.section_mempelai?.nama_lengkap_pria || '');
+                    },
+                    sanitizedNamaWanita(){
+                        return DOMPurify.sanitize(this.dataSection?.section_mempelai?.nama_lengkap_wanita || '')
+                    },
+                    sanitizedProfilPria(){
+                        return DOMPurify.sanitize(this.dataSection?.section_mempelai?.profil_pria)
+                    },
+                    sanitizedProfilWanita(){
+                        return DOMPurify.sanitize(this.dataSection?.section_mempelai?.profil_wanita)
+                    },
+                    sanitizedPenutup(){
+                        return DOMPurify.sanitize(this.dataSection?.section_penutup?.penutup)
+                    },
+                    sanitizedTitleSalamPenutup(){
+                        return DOMPurify.sanitize(this.dataSection?.section_penutup?.title_salam_penutup)
+                    },
+                    sanitizedTurutUndang(){
+                        return DOMPurify.sanitize(this.dataSection?.section_turut_mengundang?.turut_mengundang)
+                    },
+                    giftCatalogLink() {
+                        const toParam = this.guestName ? `to=${this.guestName}` : '';
+                        return `https://staging-bug.ajakan.me/lisa-unlimited/gift/catalog?${toParam}`;
+                    },
+                    currentImage() {
+                        return this.dataSection?.section_gallery?.gallery[this.currentImageIndex]?.photo || '';
+                        }
+                },
+                async created() {
+                    this.extractGuestName()
+                    Promise.all([this.fetchData(), this.fetchComments()]).then(() => {
+                        this.startCountdown();
+                    }).catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+                },
+                mounted() {
+                },
+                methods: {
+                    openInvitation(){
+                        this.isInvitation = true
+                        this.$nextTick(() => {
+                            if (this.dataSection?.section_rsvp_qr?.link_qr) {
+                                this.generateQRCode(this.dataSection?.section_rsvp_qr?.link_qr);
+                            } else {
+                                console.warn('link_qr tidak ditemukan');
+                            }
+                        });
+
+                        const audio = this.$refs.audio;
+                        if (this.dataSection?.global_data?.music) {
+                            audio.src = this.dataSection.global_data.music;
+                            audio.load();
+                            audio.play().catch((err) => {
+                                console.warn("Audio play failed:", err);
+                            });
+                            this.isPlaying = true;
+                        } else {
+                            console.warn("Music URL not found");
+                        }
+
+                        this.$nextTick(() => {
+                            const detailContent = document.getElementById("detailContent");
+                            if (detailContent) {
+                              detailContent.scrollIntoView({ behavior: "smooth" });
+                            }
+                        });
+                    },
+                    async fetchData() {
+                        try {
+                            this.isLoading = true
+                            const data = await this.fetchWithTimeout(
+                                'https://staging-bug.ajakan.me/api/guest/invitation/lisa-unlimited',
+                                10000);
+                            if (data && data.data.wedding) {
+                                this.dataSection = data.data.wedding;
+                                this.updateMetaTags(this.dataSection.header_website);
+                                this.splitTanggal(this.dataSection?.section_schedule?.schedule[0].tanggal)
+                                this.dataSection?.section_schedule?.schedule.slice(1).forEach((resepsi) => {
+                                    if (resepsi.tanggal) {
+                                        this.splitTanggal2(resepsi.tanggal, resepsi); 
+                                    }
+                                });
+                                this.loadFont(this.dataSection.global_data.font_library);
+                                this.fontCustom = this.dataSection.global_data.font;
+
+                            } else {
+                                console.error('Unexpected data structure', data);
+                            }
+                        } catch (error) {
+                            console.error('Error fetching API:', error);
+                        } finally {
+                            this.isLoading = false;
+                        }
+                    },
+
+                    async fetchWithTimeout(url, timeout) {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+                        try {
+                            const response = await fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                signal: controller.signal
+                            });
+
+                            clearTimeout(timeoutId);
+
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok ' + response
+                                    .statusText);
+                            }
+
+                            return await response.json();
+                        } catch (error) {
+                            if (error.name === 'AbortError') {
+                                throw new Error('Request timed out');
+                            }
+                            throw error;
+                        }
+                    },
+                    async fetchComments() {
+                        fetch(
+                                "https://staging-bug.ajakan.me/api/guest/lisa-unlimited/comment", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                }
+                            )
+                            .then((response) => response.json())
+                            .then((data) => {
+                                this.listComment = data.data
+                                this.totalComment = this.listComment.length + 1
+                            })
+                            .catch((error) => {
+                                console.error("Error fetching comments:", error);
+                            });
+                    },
+                    extractGuestName() {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        this.guestName = urlParams.get("to") || "Nama Tamu";
+                    },
+                    updateMetaTags(header) {
+                        document.title = header.meta.title;
+                        this.updateMetaTag("description", header.meta.name.description);
+                        this.updateMetaProperty(
+                            "og:site_name",
+                            header.meta.property["og:site_name"]
+                        );
+                        this.updateMetaProperty(
+                            "og:title",
+                            header.meta.property["og:title"]
+                        );
+                        this.updateMetaProperty(
+                            "og:description",
+                            header.meta.property["og:description"]
+                        );
+                        this.updateMetaProperty("og:url", header.meta.property["og:url"]);
+                        this.updateMetaProperty(
+                            "og:image",
+                            header.meta.property["og:image"]
+                        );
+                        this.updateMetaProperty("og:type", header.meta.property["og:type"]);
+                        this.updateMetaProperty(
+                            "og:image:width",
+                            header.meta.property["og:image:width"]
+                        );
+                        this.updateMetaProperty(
+                            "og:image:height",
+                            header.meta.property["og:image:height"]
+                        );
+                        this.updateMetaProperty(
+                            "og:image:type",
+                            header.meta.property["og:image:type"]
+                        );
+                        this.updateMetaProperty(
+                            "og:locale",
+                            header.meta.property["og:locale"]
+                        );
+                        this.updateMetaProperty(
+                            "og:locale:alternate",
+                            header.meta.property["og:locale:alternate"]
+                        );
+                        this.updateMetaProperty(
+                            "og:updated_time",
+                            header.meta.property["og:updated_time"]
+                        );
+                        this.updateLink("shortcut icon", header.link.rel["shortcut icon"]);
+                    },
+                    updateMetaTag(name, content) {
+                        let element = document.querySelector(`meta[name='${name}']`);
+                        if (!element) {
+                            element = document.createElement("meta");
+                            element.setAttribute("name", name);
+                            document.head.appendChild(element);
+                        }
+                        element.setAttribute("content", content);
+                    },
+                    updateMetaProperty(property, content) {
+                        let element = document.querySelector(
+                            `meta[property='${property}']`
+                        );
+                        if (!element) {
+                            element = document.createElement("meta");
+                            element.setAttribute("property", property);
+                            document.head.appendChild(element);
+                        }
+                        element.setAttribute("content", content);
+                    },
+                    updateLink(rel, href) {
+                        let element = document.querySelector(`link[rel='${rel}']`);
+                        if (!element) {
+                            element = document.createElement("link");
+                            element.setAttribute("rel", rel);
+                            document.head.appendChild(element);
+                        }
+                        element.setAttribute("href", href);
+                    },
+                    startCountdown() {
+                        const countdownDate = new Date(this.dataSection?.section_pembuka?.tanggal_countdown).getTime();
+                        const countdownInterval = setInterval(() => {
+                            const now = new Date().getTime();
+                            const distance = countdownDate - now;
+                    
+                            if (distance > 0) {
+                                this.days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                this.seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                            } else {
+                                this.days = 0;
+                                this.hours = 0;
+                                this.minutes = 0;
+                                this.seconds = 0;
+                                clearInterval(countdownInterval); 
+                            }
+                        }, 1000);
+                    },
+                    sanitizedJudul(judul) {
+                        return DOMPurify.sanitize(judul || ''); 
+                    },
+                    sanitizedWaktu(waktu) {
+                        return DOMPurify.sanitize(waktu || '');  
+                    },
+                    sanitizedLokasi(lokasi) {
+                        return DOMPurify.sanitize(lokasi || '');
+                    },
+                    splitTanggal(tanggalString) {
+                        const cleanTanggalString = tanggalString.replace(/<\/?[^>]+(>|$)/g, "").trim();
+
+                        const parts = cleanTanggalString.split(", ");
+
+
+                        if (parts.length === 2) {
+                            this.hariNikah = parts[0];
+
+                            const dateParts = parts[1].split(" ");
+
+
+                            if (dateParts.length === 3) {
+                                this.tanggalNikahDay = dateParts[0];
+
+                                this.bulanNikah = dateParts[1];
+                                this.tahunNikah = dateParts[2];
+                            } else {
+                                console.warn("Date parts length is not 3, unexpected format:",
+                                    dateParts);
+                            }
+                        } else {
+                            console.warn("Parts length is not 2, unexpected format:", parts);
+                        }
+                    },
+                    splitTanggal2(tanggalString, resepsi) {
+                        const cleanTanggalString = tanggalString.replace(/<\/?[^>]+(>|$)/g, "").trim();
+
+                        const parts = cleanTanggalString.split(", ");
+                    
+                        if (parts.length === 2) {
+                            resepsi.hariNikah = parts[0]; 
+                    
+                            const dateParts = parts[1].split(" ");
+                    
+                            if (dateParts.length === 3) {
+                                resepsi.tanggalNikahDay = dateParts[0];
+                                resepsi.bulanNikah = dateParts[1];
+                                resepsi.tahunNikah = dateParts[2];
+                            } else {
+                                console.warn("Date parts length is not 3, unexpected format:", dateParts);
+                            }
+                        } else {
+                            console.warn("Parts length is not 2, unexpected format:", parts);
+                        }
+                    },
+                    submitForm() {
+						if (!this.validateForm()) {
+							this.showNotification('Isi Inputan Semuanya')
+							return;
+						}
+                        this.isLoadingSend = true
+						const formdata = new FormData();
+						formdata.append("name", this.form.name);
+						formdata.append("write_as", this.form.write_as);
+						formdata.append("sosmed", this.form.sosmed);
+						formdata.append("comment", this.form.comment);
+
+                        fetch('https://staging-bug.ajakan.me/api/guest/lisa-unlimited/comment/store', {
+                            method: 'POST',
+                            body: formdata,
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok ' + response
+                                    .statusText);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            this.isLoadingSend = false
+                            this.fetchComments();
+                            setTimeout(() => {
+                                this.isSendComment = true
+                                this.resetForm();
+                            }, 2000);
+                        })
+                        .catch(error => {
+                            console.error('Error submitting form:', error);
+                            alert("Gagal mengirim komentar. Silakan coba lagi nanti.");
+                        });
+					},
+					validateForm() {
+						return (
+							this.form.name &&
+							this.form.write_as &&
+							this.form.sosmed &&
+							this.form.comment
+						);
+					},
+					resetForm() {
+						this.form.name = "";
+						this.form.write_as = "";
+						this.form.sosmed = "";
+						this.form.comment = "";
+					},
+                    generateQRCode(link) {
+                        const qrCodeElement = document.getElementById('qrCode');
+                        if (!qrCodeElement) {
+                            console.error('QR Code element not found');
+                            return;
+                        }
+                        new QRCode(qrCodeElement, {
+                            text: link,
+                            width: 128,
+                            height: 128,
+                            colorDark: "#000000",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    },
+                    openPreview(index) {
+                        this.currentImageIndex = index;
+                        this.isPreviewOpen = true;
+                        document.addEventListener("keydown", this.handleKeyNavigation);
+                      },
+                    closePreview() {
+                        this.isPreviewOpen = false;
+                        document.removeEventListener("keydown", this.handleKeyNavigation);
+                    },
+                    prevImage() {
+                        this.currentImageIndex = 
+                          (this.currentImageIndex - 1 + this.dataSection.section_gallery.gallery.length) % 
+                          this.dataSection.section_gallery.gallery.length;
+                    },
+                    nextImage() {
+                        this.currentImageIndex = 
+                          (this.currentImageIndex + 1) % 
+                          this.dataSection.section_gallery.gallery.length;
+                    },
+                    handleKeyNavigation(event) {
+                        if (event.key === "ArrowLeft") {
+                          this.prevImage();
+                        } else if (event.key === "ArrowRight") {
+                          this.nextImage();
+                        } else if (event.key === "Escape") {
+                          this.closePreview();
+                        }
+                    },
+                    toggleAudio() {
+                        const audio = this.$refs.audio;
+                        if (this.isPlaying) {
+                          audio.pause();
+                        } else {
+                          audio.play();
+                        }
+                        this.isPlaying = !this.isPlaying;
+                    },
+                    loadFont(fontUrl) {
+						const link = document.createElement("link");
+						link.rel = "stylesheet";
+						link.href = fontUrl;
+						document.head.appendChild(link);
+					},
+                    copyRekening(noRek, index) {
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(noRek).then(() => {
+                                this.copiedIndex = index; 
+                                
+                                setTimeout(() => {
+                                    this.copiedIndex = null;
+                                }, 3000);
+                            }).catch((error) => {
+                                console.error('Gagal menyalin nomor rekening:', error);
+                            });
+                        } else {
+                            console.warn('Clipboard API tidak didukung di browser ini.');
+                        }
+                    },
+                    extractAndCopy(account, key) {
+                        if (!account) {
+                            console.warn(`Data untuk ${key} tidak ditemukan.`);
+                            return;
+                        }
+                
+                        const parts = account.split("-");
+                        if (parts.length >= 3) {
+                            const nomorRekening = parts[1]; 
+                
+                            if (navigator.clipboard) {
+                                navigator.clipboard.writeText(nomorRekening).then(() => {
+                                    this.$set(this.copiedStatus, key, true); 
+
+                                    setTimeout(() => {
+                                        this.$set(this.copiedStatus, key, false);
+                                    }, 3000);
+                                }).catch((error) => {
+                                    console.error(`Gagal menyalin nomor ${key}:`, error);
+                                });
+                            } else {
+                                console.warn("Clipboard API tidak didukung di browser ini.");
+                            }
+                        } else {
+                            console.warn(`Format data ${key} tidak valid.`);
+                        }
+                    },
+                    copyNumber(number, key) {
+                        if (!number) {
+                            console.warn(`${key} tidak ditemukan.`);
+                            return;
+                        }
+
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(number).then(() => {
+                                this.$set(this.copiedStatus, key, true); 
+
+                                setTimeout(() => {
+                                    this.$set(this.copiedStatus, key, false);
+                                }, 3000);
+                            }).catch((error) => {
+                                console.error(`Gagal menyalin nomor ${key}:`, error);
+                            });
+                        } else {
+                            console.warn("Clipboard API tidak didukung di browser ini.");
+                        }
+                    }
+                }
+            })
+        })
+    </script>
+    <script>
+        AOS.init({
+            easing: "ease-in-out",
+            once: true,
+        });
+        setInterval(resetAOS, 100);
+
+        function resetAOS() {
+            AOS.refresh();
+        }
+    </script>
+</body>
+
+</html>
